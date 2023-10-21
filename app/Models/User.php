@@ -51,32 +51,4 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [];
-
-    /**
-     * Motivate the user
-     *
-     * @return void
-     */
-    public function motivate()
-    {
-        MotivateUser::dispatchNow($this);
-    }
-
-    /**
-     * Create a greeting that we can display to the user.
-     *
-     * @param  bool  $smallTalk
-     * @param  string  $salutation
-     * @return string
-     */
-    public function getGreeting(bool $smallTalk = true, string $salutation): string
-    {
-        $greeting = "$salutation, {$this->name}!";
-
-        if ($smallTalk) {
-            $greeting .= " Lovely weather we are having!";
-        }
-
-        return $greeting;
-    }
 }
