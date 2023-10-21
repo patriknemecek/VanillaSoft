@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Utilities\Contracts\ElasticsearchHelperInterface;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use MailerLite\LaravelElasticsearch\Facade as Elasticsearch;
 
 class ElasticsearchService implements ElasticsearchHelperInterface
@@ -28,17 +30,26 @@ class ElasticsearchService implements ElasticsearchHelperInterface
 
     public function getAllEmails(): Collection
     {
-        $elasticStatResult = Elasticsearch::count([
-            'index' => static::EMAILS_INDEX,
-        ]);
+        try {
+            $elasticStatResult = Elasticsearch::count([
+                'index' => static::EMAILS_INDEX,
+            ]);
 
-        $elasticResult = Elasticsearch::search([
-            'index' => static::EMAILS_INDEX,
-            'size' => $elasticStatResult['count']
-        ]);
+            $elasticResult = Elasticsearch::search([
+                'index' => static::EMAILS_INDEX,
+                'size' => $elasticStatResult['count']
+            ]);
 
-        $hits = Arr::get($elasticResult, 'hits.hits', []);
+            $hits = Arr::get($elasticResult, 'hits.hits', []);
 
-        return collect($hits);
+            return collect($hits);
+        } catch (Missing404Exception $exception) {
+            Log::warning(vsprintf('%s | %s', [
+                __METHOD__,
+                $exception
+            ]));
+
+            return collect([]);
+        }
     }
 }

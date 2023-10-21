@@ -18,11 +18,32 @@ class ListEndpointTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test list emails
+     * Test empty list emails
      *
      * @return void
      */
-    public function test_list_emails()
+    public function test_empty_list_emails()
+    {
+        Artisan::call('laravel-elasticsearch:utils:index-delete', [
+            'index-name' => 'emails'
+        ]);
+
+        Elasticsearch::indices()->refresh();
+
+        $response = $this->getJson('api/list');
+
+        $response->assertStatus(200);
+        $response->assertExactJson([
+            'data' => []
+        ]);
+    }
+
+    /**
+     * Test list dispatched emails
+     *
+     * @return void
+     */
+    public function test_list_dispatched_emails()
     {
         Mail::fake();
         Queue::fake();
