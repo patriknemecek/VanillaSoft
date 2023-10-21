@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-class EmailControllerTest extends TestCase
+class UserSendEndpointTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
