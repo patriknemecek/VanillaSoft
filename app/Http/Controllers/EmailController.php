@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Utilities\Contracts\ElasticsearchHelperInterface;
-use App\Utilities\Contracts\RedisHelperInterface;
+use App\Http\Requests\EmailSendRequest;
+use App\Jobs\SendEmail;
+use Ramsey\Uuid\Uuid;
 
 class EmailController extends Controller
 {
-    // TODO: finish implementing send method
-    public function send()
+    public function send(EmailSendRequest $request)
     {
+        $data = $request->validated();
 
+        foreach ($data['emails'] as $emailData) {
+            SendEmail::dispatch(Uuid::uuid4(), $emailData['email_address'], $emailData['subject'], $emailData['body']);
+        }
 
-        /** @var ElasticsearchHelperInterface $elasticsearchHelper */
-        $elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);
-        // TODO: Create implementation for storeEmail and uncomment the following line
-        // $elasticsearchHelper->storeEmail(...);
-
-        /** @var RedisHelperInterface $redisHelper */
-        $redisHelper = app()->make(RedisHelperInterface::class);
-        // TODO: Create implementation for storeRecentMessage and uncomment the following line
-        // $redisHelper->storeRecentMessage(...);
+        return [
+            'status' => 'ok'
+        ];
     }
 
     //  TODO - BONUS: implement list method
