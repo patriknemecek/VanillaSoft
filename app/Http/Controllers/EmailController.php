@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmailSendRequest;
+use App\Http\Resources\EmailResource;
 use App\Jobs\SendEmail;
+use App\Utilities\Contracts\ElasticsearchHelperInterface;
 use Ramsey\Uuid\Uuid;
 
 class EmailController extends Controller
@@ -21,9 +23,10 @@ class EmailController extends Controller
         ];
     }
 
-    //  TODO - BONUS: implement list method
-    public function list()
+    public function list(ElasticsearchHelperInterface $elasticsearch)
     {
+        $emails = $elasticsearch->getAllEmails();
 
+        return EmailResource::collection($emails);
     }
 }

@@ -21,3 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->post('/{user}/send', [EmailController::class, 'send']);
+
+Route::get('/list', [EmailController::class, 'list']);
